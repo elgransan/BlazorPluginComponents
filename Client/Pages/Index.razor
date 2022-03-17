@@ -1,0 +1,44 @@
+﻿@page "/"
+@using System.Reflection
+@using Microsoft.AspNetCore.Components.WebAssembly.Services
+@using System.Runtime.Loader
+@inject HttpClient Http
+@inject IJSRuntime jsRuntime;
+@inject NavigationManager MyNavigationManager
+
+<PageTitle>Index</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+<Component1></Component1>
+
+@if (componentType != null)
+{
+	<DynamicComponent Type="@componentType" />
+}
+
+@code
+{
+	private Type? componentType;
+
+	protected override async Task OnInitializedAsync()
+	{
+		try {
+			var componentPackage = "RazorClassLibrary2";
+			var component = "Component2";
+			var bytes = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
+			var assembly = AssemblyLoadContext.Default.LoadFromStream(bytes);
+			componentType = assembly.GetType(componentPackage + "." + component);
+			var interop = new Interop(jsRuntime);
+            await interop.IncludeLink("", "stylesheet", $"/{componentPackage}/{componentPackage}.styles.css", "text/css", "", "anonymous", "");
+		}
+		catch(Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
+	}
+}
