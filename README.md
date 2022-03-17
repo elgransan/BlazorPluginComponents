@@ -6,5 +6,5 @@ Allows to upload RCL components to Blazor Webassembly website and show the compo
 
 The first RCL component is loaded in normal way
 
-The second RCL component is loaded dinamically
+The second RCL component is loaded dynamically
 
