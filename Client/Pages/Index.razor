@@ -22,12 +22,9 @@ Welcome to your new app.
 {
 	<DynamicComponent Type="@componentType" />
 }
-<div>@hexa</div>
-
-<div>@hexa2</div>
 
 <input type="text" @bind="component2" />
-<InputFile OnChange="@LoadFiles" />
+<InputFile OnChange="@LoadFiles" multiple />
 <button type="button" class="btn btn-primary" @onclick="ConfirmUpdate">Upload</button>
 
 @if (componentType2 != null)
@@ -40,9 +37,7 @@ Welcome to your new app.
 	private Type? componentType;
 	private Type? componentType2;
 	private string component2 = "RazorClassLibrary2.Component2";
-	MemoryStream ms = new MemoryStream();
-	private string hexa = "";
-	private string hexa2 = "";
+	private List<IBrowserFile> files = new();
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -50,11 +45,6 @@ Welcome to your new app.
 			var componentPackage = "RazorClassLibrary2";
 			var component = "Component2";
 			var stream = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
-			using MemoryStream ms = new();
-			stream.CopyTo(ms);
-			var bytes = ms.ToArray();
-			hexa = ByteArrayToHexString(bytes);
-			stream.Position = 0;
 			var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
 			componentType = assembly.GetType(componentPackage + "." + component);
 			var interop = new Interop(jsRuntime);
@@ -66,38 +56,32 @@ Welcome to your new app.
 		}
 	}
 
-	public string ByteArrayToHexString(byte[] Bytes)
+	private void LoadFiles(InputFileChangeEventArgs e)
 	{
-		StringBuilder Result = new StringBuilder(Bytes.Length * 2);
-		string HexAlphabet = "0123456789ABCDEF";
-
-		foreach (byte B in Bytes)
-		{
-			Result.Append(HexAlphabet[(int)(B >> 4)]);
-			Result.Append(HexAlphabet[(int)(B & 0xF)]);
-		}
-
-		return Result.ToString();
+		files = e.GetMultipleFiles().ToList();
 	}
 
-	private async void LoadFiles(InputFileChangeEventArgs e)
-	{
-		await e.File.OpenReadStream().CopyToAsync(ms);
-		try {
-			var bytes = ms.ToArray();
-			hexa2 = ByteArrayToHexString(bytes);
-			var assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
-			componentType2 = assembly.GetType(component2);
-		}
-		catch(Exception ex)
-		{
-			Console.WriteLine(ex.Message);
-		}
-	}
-
-	private void ConfirmUpdate()
+	private async void ConfirmUpdate()
 	{
 		var interop = new Interop(jsRuntime);
 
+		foreach(var file in files)
+		{
+			if (file.Name.EndsWith(".dll"))
+			{
+				using MemoryStream ms = new();
+				await file.OpenReadStream().CopyToAsync(ms);
+				try {
+					var bytes = ms.ToArray();
+					var assembly = Assembly.Load(bytes);
+					componentType2 = assembly.GetType(component2);
+					StateHasChanged();
+				}
+				catch(Exception ex)
+				{
+					Console.WriteLine(ex.Message);
+				}
+			}
+		}
 	}
 }
