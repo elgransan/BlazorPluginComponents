@@ -184,7 +184,7 @@ public class Interop
         }
         catch
         {
-            return new ValueTask<string[]>(Task.FromResult(new string[0]));
+            return new ValueTask<string[]>(Task.FromResult(Array.Empty<string>()));
         }
     }
 

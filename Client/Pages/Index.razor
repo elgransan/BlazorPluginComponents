@@ -2,6 +2,8 @@
 @using System.Reflection
 @using Microsoft.AspNetCore.Components.WebAssembly.Services
 @using System.Runtime.Loader
+@using System.IO;
+@using System.Text
 @inject HttpClient Http
 @inject IJSRuntime jsRuntime;
 @inject NavigationManager MyNavigationManager
@@ -21,24 +23,65 @@ Welcome to your new app.
 	<DynamicComponent Type="@componentType" />
 }
 
+<input type="text" @bind="component2" />
+<InputFile OnChange="@LoadFiles" multiple />
+<button type="button" class="btn btn-primary" @onclick="ConfirmUpdate">Upload</button>
+
+@if (componentType2 != null)
+{
+	<DynamicComponent Type="@componentType2" />
+}
+
 @code
 {
 	private Type? componentType;
+	private Type? componentType2;
+	private string component2 = "RazorClassLibrary2.Component2";
+	private List<IBrowserFile> files = new();
 
 	protected override async Task OnInitializedAsync()
 	{
 		try {
 			var componentPackage = "RazorClassLibrary2";
 			var component = "Component2";
-			var bytes = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
-			var assembly = AssemblyLoadContext.Default.LoadFromStream(bytes);
+			var stream = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
+			var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
 			componentType = assembly.GetType(componentPackage + "." + component);
 			var interop = new Interop(jsRuntime);
-            await interop.IncludeLink("", "stylesheet", $"/{componentPackage}/{componentPackage}.styles.css", "text/css", "", "anonymous", "");
+			await interop.IncludeLink("", "stylesheet", $"/{componentPackage}/{componentPackage}.styles.css", "text/css", "", "anonymous", "");
 		}
 		catch(Exception ex)
 		{
 			Console.WriteLine(ex.Message);
+		}
+	}
+
+	private void LoadFiles(InputFileChangeEventArgs e)
+	{
+		files = e.GetMultipleFiles().ToList();
+	}
+
+	private async void ConfirmUpdate()
+	{
+		var interop = new Interop(jsRuntime);
+
+		foreach(var file in files)
+		{
+			if (file.Name.EndsWith(".dll"))
+			{
+				using MemoryStream ms = new();
+				await file.OpenReadStream().CopyToAsync(ms);
+				try {
+					var bytes = ms.ToArray();
+					var assembly = Assembly.Load(bytes);
+					componentType2 = assembly.GetType(component2);
+					StateHasChanged();
+				}
+				catch(Exception ex)
+				{
+					Console.WriteLine(ex.Message);
+				}
+			}
 		}
 	}
 }
