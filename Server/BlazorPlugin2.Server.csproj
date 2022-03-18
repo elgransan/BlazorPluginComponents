@@ -1,19 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Client\BlazorPlugin2.Client.csproj" />
-    <ProjectReference Include="..\Shared\BlazorPlugin2.Shared.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Client\BlazorPlugin2.Client.csproj" />
+		<ProjectReference Include="..\Shared\BlazorPlugin2.Shared.csproj" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<SourceFiles Include="$(SolutionDir)\RazorClassLibrary2\bin\Debug\net6.0\RazorClassLibrary2.dll;$(SolutionDir)\RazorClassLibrary2\Component2.razor.css;$(SolutionDir)\RazorClassLibrary2\wwwroot\background.png"/>
+		<DestinationFiles Include="$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.dll;$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.styles.css;$(ProjectDir)\wwwroot\RazorClassLibrary2\background.png"/>
+	</ItemGroup>
+
+	<Target Name="CopyFilesTargetName" AfterTargets="Build">
+		<Copy
+			SkipUnchangedFiles="true"
+			SourceFiles="@(SourceFiles)"
+			DestinationFiles="@(DestinationFiles)" />
+	</Target>
 
 </Project>
