@@ -2,6 +2,8 @@
 @using System.Reflection
 @using Microsoft.AspNetCore.Components.WebAssembly.Services
 @using System.Runtime.Loader
+@using System.IO;
+@using System.Text
 @inject HttpClient Http
 @inject IJSRuntime jsRuntime;
 @inject NavigationManager MyNavigationManager
@@ -20,25 +22,82 @@ Welcome to your new app.
 {
 	<DynamicComponent Type="@componentType" />
 }
+<div>@hexa</div>
+
+<div>@hexa2</div>
+
+<input type="text" @bind="component2" />
+<InputFile OnChange="@LoadFiles" />
+<button type="button" class="btn btn-primary" @onclick="ConfirmUpdate">Upload</button>
+
+@if (componentType2 != null)
+{
+	<DynamicComponent Type="@componentType2" />
+}
 
 @code
 {
 	private Type? componentType;
+	private Type? componentType2;
+	private string component2 = "RazorClassLibrary2.Component2";
+	MemoryStream ms = new MemoryStream();
+	private string hexa = "";
+	private string hexa2 = "";
 
 	protected override async Task OnInitializedAsync()
 	{
 		try {
 			var componentPackage = "RazorClassLibrary2";
 			var component = "Component2";
-			var bytes = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
-			var assembly = AssemblyLoadContext.Default.LoadFromStream(bytes);
+			var stream = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
+			using MemoryStream ms = new();
+			stream.CopyTo(ms);
+			var bytes = ms.ToArray();
+			hexa = ByteArrayToHexString(bytes);
+			stream.Position = 0;
+			var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
 			componentType = assembly.GetType(componentPackage + "." + component);
 			var interop = new Interop(jsRuntime);
-            await interop.IncludeLink("", "stylesheet", $"/{componentPackage}/{componentPackage}.styles.css", "text/css", "", "anonymous", "");
+			await interop.IncludeLink("", "stylesheet", $"/{componentPackage}/{componentPackage}.styles.css", "text/css", "", "anonymous", "");
 		}
 		catch(Exception ex)
 		{
 			Console.WriteLine(ex.Message);
 		}
+	}
+
+	public string ByteArrayToHexString(byte[] Bytes)
+	{
+		StringBuilder Result = new StringBuilder(Bytes.Length * 2);
+		string HexAlphabet = "0123456789ABCDEF";
+
+		foreach (byte B in Bytes)
+		{
+			Result.Append(HexAlphabet[(int)(B >> 4)]);
+			Result.Append(HexAlphabet[(int)(B & 0xF)]);
+		}
+
+		return Result.ToString();
+	}
+
+	private async void LoadFiles(InputFileChangeEventArgs e)
+	{
+		await e.File.OpenReadStream().CopyToAsync(ms);
+		try {
+			var bytes = ms.ToArray();
+			hexa2 = ByteArrayToHexString(bytes);
+			var assembly = AssemblyLoadContext.Default.LoadFromStream(ms);
+			componentType2 = assembly.GetType(component2);
+		}
+		catch(Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+		}
+	}
+
+	private void ConfirmUpdate()
+	{
+		var interop = new Interop(jsRuntime);
+
 	}
 }
