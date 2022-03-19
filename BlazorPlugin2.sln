@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorPlugin2.Client", "Cli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorPlugin2.Shared", "Shared\BlazorPlugin2.Shared.csproj", "{AC5779D3-3303-4297-8EDE-48D99337EF91}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorClassLibrary1", "RazorClassLibrary1\RazorClassLibrary1.csproj", "{842AE7A6-D8B3-4DD2-A5EA-F5B482FB0260}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorClassLibrary1", "RazorClassLibrary1\RazorClassLibrary1.csproj", "{842AE7A6-D8B3-4DD2-A5EA-F5B482FB0260}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorClassLibrary2", "RazorClassLibrary2\RazorClassLibrary2.csproj", "{219F136E-142C-4CD4-BD25-CBCD4FBC8AAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RazorClassLibrary2", "RazorClassLibrary2\RazorClassLibrary2.csproj", "{219F136E-142C-4CD4-BD25-CBCD4FBC8AAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorClassLibrary3", "RazorClassLibrary3\RazorClassLibrary3.csproj", "{D5B01E5D-D06B-44B1-BB94-46086179FEC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{219F136E-142C-4CD4-BD25-CBCD4FBC8AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{219F136E-142C-4CD4-BD25-CBCD4FBC8AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{219F136E-142C-4CD4-BD25-CBCD4FBC8AAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5B01E5D-D06B-44B1-BB94-46086179FEC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5B01E5D-D06B-44B1-BB94-46086179FEC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5B01E5D-D06B-44B1-BB94-46086179FEC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5B01E5D-D06B-44B1-BB94-46086179FEC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

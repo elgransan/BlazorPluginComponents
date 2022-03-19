@@ -1,6 +1,19 @@
 ﻿.my-component {
-    border: 2px dashed red;
+    border: 2px dashed blue;
     padding: 1em;
     margin: 1em 0;
-    background-image: url('background.png');
+    position: relative;
+    overflow: hidden;
 }
+
+    .my-component::before {
+        background: url(background.png);
+        transform: rotateX(180deg);
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }

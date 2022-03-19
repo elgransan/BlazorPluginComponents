@@ -101,6 +101,21 @@ public class Interop
         }
     }
 
+    public Task AddLink(string style, string place = "head")
+    {
+        try
+        {
+            _jsRuntime.InvokeVoidAsync(
+                "BlazorPlugin2.Interop.addLink",
+                style, place);
+            return Task.CompletedTask;
+        }
+        catch
+        {
+            return Task.CompletedTask;
+        }
+    }
+
     public Task IncludeScript(string id, string src, string integrity, string crossorigin, string content, string location, string key)
     {
         try

@@ -119,6 +119,16 @@ BlazorPlugin2.Interop = {
             this.includeLink(links[i].id, links[i].rel, links[i].href, links[i].type, links[i].integrity, links[i].crossorigin, links[i].key);
         }
     },
+    addLink: function (style, location) {
+        link = document.createElement("style");
+        link.textContent = style;
+        if (location === 'head') {
+            document.head.appendChild(link);
+        }
+        if (location === 'body') {
+            document.body.appendChild(link);
+        }
+    },
     includeScript: function (id, src, integrity, crossorigin, content, location, key) {
         var script;
         if (id !== "" && key === "id") {
