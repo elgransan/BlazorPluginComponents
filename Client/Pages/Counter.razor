@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@inject ExampleJsInterop ExampleJsInteropObj;
 
 <PageTitle>Counter</PageTitle>
 
@@ -6,13 +7,22 @@
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="IncrementCount">Add</button>
+
+<button class="btn btn-primary" @onclick="Popup">@text</button>
 
 @code {
     private int currentCount = 0;
+    private string text = "Click me";
 
     private void IncrementCount()
     {
         currentCount++;
+    }
+
+    private async void Popup()
+    {
+        text = await ExampleJsInteropObj.Prompt("Hello");
+        StateHasChanged();
     }
 }

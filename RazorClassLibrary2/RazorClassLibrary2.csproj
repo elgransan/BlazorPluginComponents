@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <StaticWebAssetBasePath Condition="$(StaticWebAssetBasePath) == ''">/path</StaticWebAssetBasePath>
   </PropertyGroup>
 
 

@@ -1,3 +1,38 @@
-﻿<div class="my-component">
+﻿@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS;
+
+<div class="my-component" @onclick="TriggerPrompt">
     This component is defined in the <strong>RazorClassLibrary1</strong> library.
 </div>
+
+@code {
+    private IJSObjectReference? module;
+    private string? result;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", 
+            "./_content/RazorClassLibrary1/Component1.razor.js");
+        }
+    }
+    
+    private async Task TriggerPrompt()
+    {
+        result = await Prompt("Provide some text");
+    }
+
+    public async ValueTask<string?> Prompt(string message) =>
+        module is not null ? 
+            await module.InvokeAsync<string>("showPrompt", message) : null;
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+        }
+    }
+}
