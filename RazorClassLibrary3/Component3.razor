@@ -1,3 +1,20 @@
-﻿<div class="my-component">
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JS;
+
+<div class="my-component3" @onclick="TriggerPrompt">
     This component is defined in the <strong>RazorClassLibrary3</strong> library.
 </div>
+
+@code
+{
+    private string? result;
+        
+    private async Task TriggerPrompt()
+    {
+        result = await Prompt("Provide some text");
+    }
+
+    public async ValueTask<string?> Prompt(string message) =>
+            await JS.InvokeAsync<string>("showPrompt", message);
+
+}

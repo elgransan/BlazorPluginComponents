@@ -145,6 +145,21 @@ public class Interop
         }
     }
 
+    public Task AddScript(string script, string place = "head")
+    {
+        try
+        {
+            _jsRuntime.InvokeVoidAsync(
+                "BlazorPlugin2.Interop.addScript",
+                script, place);
+            return Task.CompletedTask;
+        }
+        catch
+        {
+            return Task.CompletedTask;
+        }
+    }
+
     public Task RemoveElementsById(string prefix, string first, string last)
     {
         try

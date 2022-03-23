@@ -4,6 +4,7 @@
 @using System.Runtime.Loader
 @using System.IO;
 @using System.Text
+@using System.IO.Compression
 @inject HttpClient Http
 @inject IJSRuntime jsRuntime;
 @inject NavigationManager MyNavigationManager
@@ -100,6 +101,13 @@ Welcome to your new app.
 					var css = await ms.ReadToEndAsync();
 					await interop.AddLink(css);
 				}
+				else if(file.Name.EndsWith(".nupkg"))
+				{
+					using MemoryStream ms = new();
+					await file.OpenReadStream().CopyToAsync(ms);
+					var bytes = ms.ToArray();
+					LoadNuget(bytes);
+				}
 			}
 			StateHasChanged();
 		}
@@ -108,4 +116,74 @@ Welcome to your new app.
 			Console.WriteLine(ex.Message);
 		}
 	}
+
+	private async void LoadNuget(byte[] nugetFile)
+	{
+		var interop = new Interop(jsRuntime);
+		using ZipArchive archive = new ZipArchive(new MemoryStream(nugetFile));
+
+		var dlls = new Dictionary<string, byte[]>();
+		var pdbs = new Dictionary<string, byte[]>();
+		var ccss = new Dictionary<string, byte[]>();
+		var jss = new Dictionary<string, byte[]>();
+		var contents = new Dictionary<string, byte[]>();
+
+		// Read all 
+		foreach (ZipArchiveEntry entry in archive.Entries)
+		{
+			using var memoryStream = new MemoryStream();
+			entry.Open().CopyTo(memoryStream);
+			byte[] file = memoryStream.ToArray();
+			switch (Path.GetExtension(entry.FullName))
+			{
+				case ".dll":
+					dlls.Add(entry.FullName, file);
+					break;
+				case ".pdb":
+					pdbs.Add(entry.FullName, file);
+					break;
+				case ".css":
+					ccss.Add(entry.FullName, file);
+					break;
+				case ".js":
+					jss.Add(entry.FullName, file);
+					break;
+				case ".png":
+				case ".jpeg":
+				case ".jpg":
+				case ".gif":
+					contents.Add(entry.FullName, file);
+					break;
+			}
+		}
+		
+		// Load CSSs
+		foreach(var ccs in ccss)
+		{
+			string result = ASCIIEncoding.UTF8.GetString(ccs.Value);
+			await interop.AddLink(result);
+		}
+
+		// Load JSs
+		foreach(var js in jss)
+		{
+			string result = ASCIIEncoding.UTF8.GetString(js.Value);
+			await interop.AddScript(result);
+		}
+
+		// Load component
+		foreach (var item in dlls)
+		{
+			if (pdbs.ContainsKey(item.Key))
+			{
+				var assembly = Assembly.Load(item.Value, pdbs[item.Key]);
+				components.Add(assembly.GetType(component2));
+			}
+			else
+			{
+				var assembly = Assembly.Load(item.Value);
+				components.Add(assembly.GetType(component2));
+			}
+		}
+    }
 }

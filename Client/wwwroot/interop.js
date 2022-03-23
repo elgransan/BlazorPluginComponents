@@ -196,11 +196,13 @@ BlazorPlugin2.Interop = {
         }
     },
     addScript: function (script, location) {
+        js = document.createElement("script");
+        js.textContent = script;
         if (location === 'head') {
-            document.head.appendChild(script);
+            document.head.appendChild(js);
         }
         if (location === 'body') {
-            document.body.appendChild(script);
+            document.body.appendChild(js);
         }
 
         return new Promise((res, rej) => {
