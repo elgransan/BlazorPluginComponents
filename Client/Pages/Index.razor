@@ -27,15 +27,18 @@ Welcome to your new app.
 <InputFile OnChange="@LoadFiles" multiple />
 <button type="button" class="btn btn-primary" @onclick="ConfirmUpdate">Upload</button>
 
-@if (componentType2 != null)
+@foreach (var component in components)
 {
-	<DynamicComponent Type="@componentType2" />
+	if (component != null)
+	{
+		<DynamicComponent Type="@component" />
+	}
 }
 
 @code
 {
 	private Type? componentType;
-	private Type? componentType2;
+	private List<Type?> components = new();
 	private string component2 = "RazorClassLibrary3.Component3";
 	private List<IBrowserFile> files = new();
 
@@ -83,12 +86,12 @@ Welcome to your new app.
 						await pdbFile.OpenReadStream().CopyToAsync(mspdb);
 						var bytespdb = ms.ToArray();
 						var assembly = Assembly.Load(bytes, bytespdb);
-						componentType2 = assembly.GetType(component2);
+						components.Add(assembly.GetType(component2));
 					}
 					else
 					{
 						var assembly = Assembly.Load(bytes);
-						componentType2 = assembly.GetType(component2);
+						components.Add(assembly.GetType(component2));
 					}
 				}
 				else if(file.Name.EndsWith(".css"))
