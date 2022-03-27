@@ -23,7 +23,6 @@ Welcome to your new app.
 	<DynamicComponent Type="@componentType" />
 }
 
-<input type="text" @bind="component2" />
 <InputFile OnChange="@LoadFiles" multiple />
 <button type="button" class="btn btn-primary" @onclick="ConfirmUpdate">Upload</button>
 
@@ -32,12 +31,23 @@ Welcome to your new app.
 	<DynamicComponent Type="@componentType2" />
 }
 
+@if (types != null)
+{
+	<select @onchange="(e) => componentType2 = assembly.GetType((string) e.Value)">
+	@foreach(var type in types)
+	{
+		<option value="@type.FullName">(@type.BaseType?.Name) @type.Name</option>
+	}
+	</select>
+}
+
 @code
 {
 	private Type? componentType;
 	private Type? componentType2;
-	private string component2 = "RazorClassLibrary3.Component3";
+	private Assembly assembly;
 	private List<IBrowserFile> files = new();
+	private List<Type> types;
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -64,7 +74,7 @@ Welcome to your new app.
 	private async void ConfirmUpdate()
 	{
 		var interop = new Interop(jsRuntime);
-		
+
 		try {
 			foreach(var file in files)
 			{
@@ -73,8 +83,9 @@ Welcome to your new app.
 					using MemoryStream ms = new();
 					await file.OpenReadStream().CopyToAsync(ms);
 					var bytes = ms.ToArray();
-					var assembly = Assembly.Load(bytes);
-					componentType2 = assembly.GetType(component2);
+					assembly = Assembly.Load(bytes);
+					var assemblyName = assembly.GetName().Name ?? "";
+					types = assembly.GetExportedTypes().ToList();
 				}
 				else if(file.Name.EndsWith(".css"))
 				{
