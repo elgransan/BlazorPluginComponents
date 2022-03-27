@@ -1,0 +1,29 @@
+﻿@page "/module"
+@using System.Net.Http.Headers;
+@inject IComponentRepository repo;
+@inject HttpClient Http;
+
+<PageTitle>Module Manager</PageTitle>
+
+<h1>Module Manager</h1>
+
+Select Nuget Package (nupkg file)
+<InputFile OnChange="@OnInputFileChange" />
+
+
+@code {
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        using var content = new MultipartFormDataContent();
+
+        var fileContent = new StreamContent(file.OpenReadStream());
+                
+        content.Add(
+            content: fileContent,
+            name: "\"file\"",
+            fileName: file.Name);
+
+        var response = await Http.PostAsync("/ModuleManager", content);
+    }
+}
