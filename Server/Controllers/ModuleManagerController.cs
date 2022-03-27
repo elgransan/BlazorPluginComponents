@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.IO.Compression;
 using System.Net;
 using System.Reflection;
 
@@ -18,28 +19,37 @@ namespace BlazorPlugin2.Server.Controllers
         [HttpPost]
         public async Task<CreatedResult> Index([FromForm] IFormFile file)
         {
-            // Open Zip file
-
-            // Read file by file
-
-            // Save all files in corresponding folder
-
+            // Check folder name
             using MemoryStream ms = new();
             await file.OpenReadStream().CopyToAsync(ms);
             var bytes = ms.ToArray();
-            var assembly = Assembly.Load(bytes);
-            var folderName = assembly.GetName().Name ?? file.FileName;
+            var folderName = file.FileName.Substring(0, file.FileName.IndexOf('.'));
 
-            string path = Path.Combine(env.WebRootPath, folderName);
-
+            // Create server path
+            string path = Path.Combine(env.WebRootPath, "_content", folderName);
             Directory.CreateDirectory(path);
 
+            // Save resources
+            LoadNuget(bytes, path);
 
+            return new CreatedResult(path, path);
+        }
 
-            await using FileStream fs = new(path, FileMode.Create);
-            await file.CopyToAsync(fs);
+        private void LoadNuget(byte[] nugetFile, string folder)
+        {
+            var validFormats = new string[] { ".dll", ".pdb", ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".json", ".txt", ".csv" };
 
-            return new CreatedResult(path, untrustedFileName);
+            using ZipArchive archive = new ZipArchive(new MemoryStream(nugetFile));
+
+            // Read all 
+            foreach (ZipArchiveEntry entry in archive.Entries)
+            {
+                if (validFormats.Contains(Path.GetExtension(entry.Name)))
+                {
+                    string path = Path.Combine(folder, entry.Name);
+                    entry.ExtractToFile(path);
+                }
+            }
         }
     }
 }
