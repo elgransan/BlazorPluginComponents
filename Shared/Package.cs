@@ -14,4 +14,5 @@ public class Package
     public bool IsLoaded { get; set; }
     public List<(string, string)> Components { get; set; } = new();
     public Assembly? Assembly { get; set; }
+    public Assembly? Symbols { get; set; }
 }

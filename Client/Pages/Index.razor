@@ -33,7 +33,7 @@ Welcome to your new app.
 
 @if (types != null)
 {
-	<select @onchange="(e) => componentType2 = assembly.GetType((string) e.Value)">
+	<select @onchange='(e) => componentType2 = assembly?.GetType(e.Value?.ToString() ?? "")'>
 	@foreach(var type in types)
 	{
 		<option value="@type.FullName">(@type.BaseType?.Name) @type.Name</option>
@@ -45,9 +45,9 @@ Welcome to your new app.
 {
 	private Type? componentType;
 	private Type? componentType2;
-	private Assembly assembly;
+	private Assembly? assembly;
 	private List<IBrowserFile> files = new();
-	private List<Type> types;
+	private List<Type>? types;
 
 	protected override async Task OnInitializedAsync()
 	{

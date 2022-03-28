@@ -3,7 +3,7 @@
 @using BlazorPlugin2.Shared;
 @using System.Runtime.Loader
 @using System.Reflection
-@inject IComponentRepository repo;
+@inject IPackageRepository repo;
 @inject HttpClient Http;
 @inject NavigationManager MyNavigationManager
 
@@ -59,32 +59,16 @@ Register Nuget Package (nupkg file)
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await Http.GetFromJsonAsync<List<Package>>("/ModuleManager");
-
-        if (result != null) packages = result;
+        packages = await repo.GetList();
     }
 
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
-        var file = e.File;
-        using var content = new MultipartFormDataContent();
-
-        var fileContent = new StreamContent(file.OpenReadStream());
-
-        content.Add(
-            content: fileContent,
-            name: "\"file\"",
-            fileName: file.Name);
-
-        var response = await Http.PostAsync("/ModuleManager", content);
+        await repo.Upload(e.File);
     }
 
     private async Task Load(Package package)
     {
-        var stream = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/_content/{package.Name}/{package.Name}.dll");
-        var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
-        package.Assembly = assembly;
-        package.Components = assembly.GetExportedTypes().Select(s => (s.FullName ?? "", s.BaseType.Name ?? "")).ToList();
-        package.IsLoaded = true;
+        await repo.Load(package);
     }
 }
