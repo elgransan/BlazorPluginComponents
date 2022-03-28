@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BlazorPlugin2.Shared;
+using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 using System.Net;
 using System.Reflection;
@@ -14,6 +15,20 @@ namespace BlazorPlugin2.Server.Controllers
         public ModuleManagerController(IWebHostEnvironment env)
         {
             this.env = env;
+        }
+
+        [HttpGet]
+        public List<Package> Get()
+        {
+            string path = Path.Combine(env.WebRootPath, "_content");
+
+            List<Package> packages = new();
+            foreach (string folder in Directory.GetDirectories(path))
+            {
+                packages.Add(new Package { Name = Path.GetFileName(folder) });
+            }
+
+            return packages;
         }
 
         [HttpPost]

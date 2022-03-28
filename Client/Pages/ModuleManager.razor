@@ -1,29 +1,90 @@
 ﻿@page "/module"
 @using System.Net.Http.Headers;
+@using BlazorPlugin2.Shared;
+@using System.Runtime.Loader
+@using System.Reflection
 @inject IComponentRepository repo;
 @inject HttpClient Http;
+@inject NavigationManager MyNavigationManager
 
 <PageTitle>Module Manager</PageTitle>
 
 <h1>Module Manager</h1>
 
-Select Nuget Package (nupkg file)
+Register Nuget Package (nupkg file)
 <InputFile OnChange="@OnInputFileChange" />
 
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <td>Module</td>
+            <td>Loaded</td>
+            <td>Components</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var package in packages)
+    {
+        <tr>
+            <td>@package.Name</td>
+            <td>@package.IsLoaded</td>
+            <td>
+                @if (package.IsLoaded)
+                {
+                    <select @onchange="(e) => componentType = package.Assembly?.GetType((string) e.Value)">
+                        @foreach (var component in package.Components)
+                        {
+                            <option value="@component.Item1">(@component.Item2) @component.Item1</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" @onclick="() => Load(package)">Load</button>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if(componentType != null)
+{
+    <DynamicComponent Type="componentType" />
+}
 
 @code {
+    Type? componentType;
+    List<Package> packages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Http.GetFromJsonAsync<List<Package>>("/ModuleManager");
+
+        if (result != null) packages = result;
+    }
+
     private async Task OnInputFileChange(InputFileChangeEventArgs e)
     {
         var file = e.File;
         using var content = new MultipartFormDataContent();
 
         var fileContent = new StreamContent(file.OpenReadStream());
-                
+
         content.Add(
             content: fileContent,
             name: "\"file\"",
             fileName: file.Name);
 
         var response = await Http.PostAsync("/ModuleManager", content);
+    }
+
+    private async Task Load(Package package)
+    {
+        var stream = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/_content/{package.Name}/{package.Name}.dll");
+        var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
+        package.Assembly = assembly;
+        package.Components = assembly.GetExportedTypes().Select(s => (s.FullName ?? "", s.BaseType.Name ?? "")).ToList();
+        package.IsLoaded = true;
     }
 }
