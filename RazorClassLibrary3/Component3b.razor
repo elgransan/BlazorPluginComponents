@@ -1,0 +1,14 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime js
+
+<div class="my-component" @onclick="jscall">
+    This component is defined in the <strong>RazorClassLibrary3 Component 3 bis</strong> library.
+</div>
+
+@code
+{
+    private void jscall()
+    {
+        js.InvokeVoidAsync("showPrompt", "hello");
+    }
+}

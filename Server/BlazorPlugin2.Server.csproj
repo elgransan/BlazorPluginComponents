@@ -16,15 +16,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<SourceFiles Include="$(SolutionDir)\RazorClassLibrary2\bin\Debug\net6.0\RazorClassLibrary2.dll;$(SolutionDir)\RazorClassLibrary2\obj\Debug\net6.0\scopedcss\bundle\RazorClassLibrary2.styles.css;$(SolutionDir)\RazorClassLibrary2\wwwroot\background.png"/>
-		<DestinationFiles Include="$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.dll;$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.styles.css;$(ProjectDir)\wwwroot\RazorClassLibrary2\background.png"/>
+		<SourceFiles Include="$(SolutionDir)\RazorClassLibrary2\bin\Debug\net6.0\RazorClassLibrary2.dll;$(SolutionDir)\RazorClassLibrary2\obj\Debug\net6.0\scopedcss\bundle\RazorClassLibrary2.styles.css;$(SolutionDir)\RazorClassLibrary2\wwwroot\background.png" />
+		<DestinationFiles Include="$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.dll;$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.styles.css;$(ProjectDir)\wwwroot\RazorClassLibrary2\background.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\_content\" />
 	</ItemGroup>
 
 	<Target Name="CopyFilesTargetName" AfterTargets="Build">
-		<Copy
-			SkipUnchangedFiles="true"
-			SourceFiles="@(SourceFiles)"
-			DestinationFiles="@(DestinationFiles)" />
+		<Copy SkipUnchangedFiles="true" SourceFiles="@(SourceFiles)" DestinationFiles="@(DestinationFiles)" />
 	</Target>
 
 </Project>

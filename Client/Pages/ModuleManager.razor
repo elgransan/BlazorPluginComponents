@@ -1,0 +1,96 @@
+﻿@page "/module"
+@using System.Net.Http.Headers;
+@using BlazorPlugin2.Shared;
+@using System.Runtime.Loader
+@using System.Reflection
+@inject IPackageRepository repo;
+@inject HttpClient Http;
+@inject NavigationManager MyNavigationManager
+@inject Interop DOMinterop;
+
+<PageTitle>Module Manager</PageTitle>
+
+<h1>Module Manager</h1>
+
+Register Nuget Package (nupkg file)
+<InputFile OnChange="@OnInputFileChange" />
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <td>Module</td>
+            <td>Loaded</td>
+            <td>Components</td>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var package in packages)
+    {
+        <tr>
+            <td>@package.Name</td>
+            <td>@package.IsLoaded</td>
+            <td>
+                @if (package.IsLoaded)
+                {
+                    <select @onchange="(e) => LoadComponent(e, package)">
+                        @foreach (var component in package.Components)
+                        {
+                            <option value="@component.Item1">(@component.Item2) @component.Item1</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" @onclick="() => Load(package)">Load</button>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+@if(componentType != null)
+{
+    <DynamicComponent Type="componentType" />
+}
+
+@code {
+    Type? componentType;
+    List<Package> packages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        packages = await repo.GetList();
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        await repo.Upload(e.File);
+    }
+
+    private async Task Load(Package package)
+    {
+        await repo.Load(package);
+    }
+
+    private void LoadComponent(ChangeEventArgs changeEventArgs, Package package)
+    {
+        string component = changeEventArgs.Value?.ToString() ?? "";
+
+        componentType = package.Assembly?.GetType(component);
+
+        foreach(var asset in package.Assets)
+        {
+            var id = asset.Item2.Substring(0, asset.Item2.LastIndexOf("."));
+
+            if (asset.Item1 == "css")
+            {
+                DOMinterop.IncludeLink(id, $"/_content/{package.Name}/{asset.Item2}");
+            }
+            else if(asset.Item1 == "js")
+            {
+                DOMinterop.IncludeScript(id, $"/_content/{package.Name}/{asset.Item2}");
+            }
+        }
+    }
+}
