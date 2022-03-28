@@ -7,13 +7,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="wwwroot\_content\**" />
-	  <Content Remove="wwwroot\_content\**" />
-	  <EmbeddedResource Remove="wwwroot\_content\**" />
-	  <None Remove="wwwroot\_content\**" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
 	</ItemGroup>
 
@@ -25,6 +18,10 @@
 	<ItemGroup>
 		<SourceFiles Include="$(SolutionDir)\RazorClassLibrary2\bin\Debug\net6.0\RazorClassLibrary2.dll;$(SolutionDir)\RazorClassLibrary2\obj\Debug\net6.0\scopedcss\bundle\RazorClassLibrary2.styles.css;$(SolutionDir)\RazorClassLibrary2\wwwroot\background.png" />
 		<DestinationFiles Include="$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.dll;$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.styles.css;$(ProjectDir)\wwwroot\RazorClassLibrary2\background.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\_content\" />
 	</ItemGroup>
 
 	<Target Name="CopyFilesTargetName" AfterTargets="Build">
