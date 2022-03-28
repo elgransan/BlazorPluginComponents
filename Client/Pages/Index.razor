@@ -57,7 +57,7 @@ Welcome to your new app.
 			var stream = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
 			var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
 			componentType = assembly.GetType(componentPackage + "." + component);
-			await DOMinterop.IncludeLink($"/{componentPackage}/{componentPackage}.styles.css");
+			await DOMinterop.IncludeLink(componentPackage, $"/{componentPackage}/{componentPackage}.styles.css");
 		}
 		catch(Exception ex)
 		{
@@ -88,7 +88,7 @@ Welcome to your new app.
 				{
 					using StreamReader ms = new(file.OpenReadStream());
 					var css = await ms.ReadToEndAsync();
-					await DOMinterop.AddLink(css);
+					await DOMinterop.AddLink(file.Name, css);
 				}
 			}
 			StateHasChanged();

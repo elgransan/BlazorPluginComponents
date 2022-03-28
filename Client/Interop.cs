@@ -12,11 +12,11 @@ public class Interop
         _jsRuntime = jsRuntime;
     }
 
-    public Task IncludeLink(string href)
+    public Task IncludeLink(string id, string href)
     {
         try
         {
-            _jsRuntime.InvokeVoidAsync("BlazorPlugin2.Interop.includeLink", href);
+            _jsRuntime.InvokeVoidAsync("BlazorPlugin2.Interop.includeLink", id, href);
             return Task.CompletedTask;
         }
         catch
@@ -25,11 +25,11 @@ public class Interop
         }
     }
 
-    public Task AddLink(string style, string place = "head")
+    public Task AddLink(string id, string style, string place = "head")
     {
         try
         {
-            _jsRuntime.InvokeVoidAsync("BlazorPlugin2.Interop.addLink", style, place);
+            _jsRuntime.InvokeVoidAsync("BlazorPlugin2.Interop.addLink", id, style, place);
             return Task.CompletedTask;
         }
         catch
@@ -38,11 +38,11 @@ public class Interop
         }
     }
 
-    public Task IncludeScript(string src)
+    public Task IncludeScript(string id, string src)
     {
         try
         {
-            _jsRuntime.InvokeVoidAsync("BlazorPlugin2.Interop.includeScript", src);
+            _jsRuntime.InvokeVoidAsync("BlazorPlugin2.Interop.includeScript", id, src);
             return Task.CompletedTask;
         }
         catch
