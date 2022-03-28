@@ -64,6 +64,12 @@ namespace BlazorPlugin2.Server.Controllers
                     string path = Path.Combine(folder, entry.Name);
                     entry.ExtractToFile(path);
                 }
+                // Static content specification
+                if (entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props")
+                {
+                    string path = Path.Combine(folder, entry.Name);
+                    entry.ExtractToFile(path);
+                }
             }
         }
     }

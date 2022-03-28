@@ -6,6 +6,7 @@
 @inject IPackageRepository repo;
 @inject HttpClient Http;
 @inject NavigationManager MyNavigationManager
+@inject Interop DOMinterop;
 
 <PageTitle>Module Manager</PageTitle>
 
@@ -31,7 +32,7 @@ Register Nuget Package (nupkg file)
             <td>
                 @if (package.IsLoaded)
                 {
-                    <select @onchange="(e) => componentType = package.Assembly?.GetType((string) e.Value)">
+                    <select @onchange="(e) => LoadComponent(e, package)">
                         @foreach (var component in package.Components)
                         {
                             <option value="@component.Item1">(@component.Item2) @component.Item1</option>
@@ -70,5 +71,21 @@ Register Nuget Package (nupkg file)
     private async Task Load(Package package)
     {
         await repo.Load(package);
+    }
+
+    private void LoadComponent(ChangeEventArgs changeEventArgs, Package package)
+    {
+        string component = changeEventArgs.Value?.ToString() ?? "";
+
+        componentType = package.Assembly?.GetType(component);
+
+        foreach(var asset in package.Assets)
+        {
+            if (asset.Item1 == "css")
+            {
+                DOMinterop.IncludeLink($"/_content/{package.Name}/{asset.Item2}");
+            }
+        }
+
     }
 }

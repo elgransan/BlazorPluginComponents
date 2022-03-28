@@ -5,7 +5,7 @@
 @using System.IO;
 @using System.Text
 @inject HttpClient Http
-@inject IJSRuntime jsRuntime;
+@inject Interop DOMinterop;
 @inject NavigationManager MyNavigationManager
 
 <PageTitle>Index</PageTitle>
@@ -57,8 +57,7 @@ Welcome to your new app.
 			var stream = await Http.GetStreamAsync($"{MyNavigationManager.BaseUri}/{componentPackage}/{componentPackage}.dll");
 			var assembly = AssemblyLoadContext.Default.LoadFromStream(stream);
 			componentType = assembly.GetType(componentPackage + "." + component);
-			var interop = new Interop(jsRuntime);
-			await interop.IncludeLink("", "stylesheet", $"/{componentPackage}/{componentPackage}.styles.css", "text/css", "", "anonymous", "");
+			await DOMinterop.IncludeLink($"/{componentPackage}/{componentPackage}.styles.css");
 		}
 		catch(Exception ex)
 		{
@@ -73,8 +72,6 @@ Welcome to your new app.
 
 	private async void ConfirmUpdate()
 	{
-		var interop = new Interop(jsRuntime);
-
 		try {
 			foreach(var file in files)
 			{
@@ -91,7 +88,7 @@ Welcome to your new app.
 				{
 					using StreamReader ms = new(file.OpenReadStream());
 					var css = await ms.ReadToEndAsync();
-					await interop.AddLink(css);
+					await DOMinterop.AddLink(css);
 				}
 			}
 			StateHasChanged();
