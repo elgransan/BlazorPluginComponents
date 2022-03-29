@@ -86,7 +86,7 @@ public class PackageRepository : IPackageRepository
         assetsList.Load(stream3);
         foreach (XmlNode asset in assetsList.GetElementsByTagName("StaticWebAsset"))
         {
-            var content = asset.SelectSingleNode("RelativePath").InnerText;
+            var content = asset.SelectSingleNode("RelativePath")?.InnerText;
             if (content.EndsWith(".js"))
                 package.Assets.Add(("js", content));
             else if (content.EndsWith(".css"))
