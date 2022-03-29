@@ -45,12 +45,12 @@ namespace BlazorPlugin2.Server.Controllers
             Directory.CreateDirectory(path);
 
             // Save resources
-            LoadNuget(bytes, path);
+            await LoadNuget(bytes, path);
 
             return Created($"/_content/{folderName}", folderName);
         }
 
-        private void LoadNuget(byte[] nugetFile, string folder)
+        private async Task LoadNuget(byte[] nugetFile, string folder)
         {
             var validFormats = new string[] { ".dll", ".pdb", ".css", ".js", ".png", ".jpg", ".jpeg", ".gif", ".json", ".txt", ".csv" };
 
@@ -59,16 +59,13 @@ namespace BlazorPlugin2.Server.Controllers
             // Read all 
             foreach (ZipArchiveEntry entry in archive.Entries)
             {
-                if (validFormats.Contains(Path.GetExtension(entry.Name)))
+                if (validFormats.Contains(Path.GetExtension(entry.Name))
+                    || entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props") // Static content specification
                 {
                     string path = Path.Combine(folder, entry.Name);
-                    entry.ExtractToFile(path);
-                }
-                // Static content specification
-                if (entry.Name == "Microsoft.AspNetCore.StaticWebAssets.props")
-                {
-                    string path = Path.Combine(folder, entry.Name);
-                    entry.ExtractToFile(path);
+                    using Stream zipStream = entry.Open();
+                    using FileStream fileStream = new FileStream(path, FileMode.Create);
+                    await zipStream.CopyToAsync(fileStream);
                 }
             }
         }

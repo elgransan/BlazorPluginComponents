@@ -13,7 +13,7 @@
 <h1>Module Manager</h1>
 
 Register Nuget Package (nupkg file)
-<InputFile OnChange="@OnInputFileChange" />
+<InputFile OnChange="@(async e => await OnInputFileChange(e))" />
 
 <table class="table table-striped">
     <thead>
