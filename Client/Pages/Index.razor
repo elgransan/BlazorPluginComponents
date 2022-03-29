@@ -10,18 +10,18 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+<p>The <strong>RazorClassLibrary1</strong> is loaded through Project Dependency</p>
 
 <Component1></Component1>
+
+<p>The <strong>RazorClassLibrary2</strong> is loaded from a url in the server with its assets</p>
 
 @if (componentType != null)
 {
 	<DynamicComponent Type="@componentType" />
 }
+
+<p>You can select a dll file and their assets to load another components dynamically</p>
 
 <InputFile OnChange="@LoadFiles" multiple />
 <button type="button" class="btn btn-primary" @onclick="ConfirmUpdate">Upload</button>
