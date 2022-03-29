@@ -13,7 +13,7 @@
 <h1>Module Manager</h1>
 
 Register Nuget Package (nupkg file)
-<InputFile OnChange="@OnInputFileChange" />
+<InputFile OnChange="@(async e => await OnInputFileChange(e))" />
 
 <table class="table table-striped">
     <thead>
@@ -49,14 +49,18 @@ Register Nuget Package (nupkg file)
     </tbody>
 </table>
 
-@if(componentType != null)
+@foreach (var component in components)
 {
-    <DynamicComponent Type="componentType" />
+	if (component != null)
+	{
+		<DynamicComponent Type="@component" />
+	}
 }
 
-@code {
-    Type? componentType;
+@code
+{
     List<Package> packages = new();
+	  private List<Type?> components = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -77,7 +81,7 @@ Register Nuget Package (nupkg file)
     {
         string component = changeEventArgs.Value?.ToString() ?? "";
 
-        componentType = package.Assembly?.GetType(component);
+        components.Add(package.Assembly?.GetType(component));
 
         foreach(var asset in package.Assets)
         {

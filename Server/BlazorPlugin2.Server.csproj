@@ -20,10 +20,6 @@
 		<DestinationFiles Include="$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.dll;$(ProjectDir)\wwwroot\RazorClassLibrary2\RazorClassLibrary2.styles.css;$(ProjectDir)\wwwroot\RazorClassLibrary2\background.png" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="wwwroot\_content\" />
-	</ItemGroup>
-
 	<Target Name="CopyFilesTargetName" AfterTargets="Build">
 		<Copy SkipUnchangedFiles="true" SourceFiles="@(SourceFiles)" DestinationFiles="@(DestinationFiles)" />
 	</Target>
