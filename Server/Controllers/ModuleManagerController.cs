@@ -32,7 +32,7 @@ namespace BlazorPlugin2.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<CreatedResult> Index([FromForm] IFormFile file)
+        public async Task<IActionResult> Index([FromForm] IFormFile file)
         {
             // Check folder name
             using MemoryStream ms = new();
@@ -47,7 +47,7 @@ namespace BlazorPlugin2.Server.Controllers
             // Save resources
             LoadNuget(bytes, path);
 
-            return new CreatedResult(path, path);
+            return Created($"/_content/{folderName}", folderName);
         }
 
         private void LoadNuget(byte[] nugetFile, string folder)

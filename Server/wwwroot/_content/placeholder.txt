@@ -1,0 +1,1 @@
+In this folder all the RCL packages are loaded to follow the Blazor Convention

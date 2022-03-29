@@ -11,14 +11,12 @@ public class PackageRepository : IPackageRepository
 {
     private readonly HttpClient Http;
     private readonly NavigationManager MyNavigationManager;
-    private readonly Interop DOMInterop;
     private List<Package> packages = new();
 
-    public PackageRepository(HttpClient http, NavigationManager myNavigationManager, Interop interop)
+    public PackageRepository(HttpClient http, NavigationManager myNavigationManager)
     {
         Http = http;
         MyNavigationManager = myNavigationManager;
-        DOMInterop = interop;
     }
 
     public async Task<List<Package>> GetList()
@@ -40,15 +38,18 @@ public class PackageRepository : IPackageRepository
     public async Task Upload(IBrowserFile file)
     {
         using var content = new MultipartFormDataContent();
+        content.Add(new StreamContent(file.OpenReadStream()), "file", file.Name);
 
-        var fileContent = new StreamContent(file.OpenReadStream());
+        try
+        {
+            var response = await Http.PostAsync("/ModuleManager", content);
 
-        content.Add(
-            content: fileContent,
-            name: "\"file\"",
-            fileName: file.Name);
-
-        var response = await Http.PostAsync("/ModuleManager", content);
+            var value = await response.Content.ReadAsStringAsync();
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
 
     public async Task<bool> Load(Package package)
