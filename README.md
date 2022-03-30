@@ -17,7 +17,7 @@ The project shows 4 ways to import and load a RCL component:
 1. The standard way, creating a project dependency
 2. Putting all the RCL files in a folder under wwwroot and get dynamically those files
 3. Manually uploading all the files
-4. Using the Module Manager witch allows you to load a RCL Nuget Package and upload to the server. Once uploaded you don't have to upload again and you can use it what ever you want
+4. Using the Module Manager witch allows you to load a RCL Nuget Package and upload to the server. Once uploaded you don't have to upload again and you can use it whenever you want
 
 Example
 
