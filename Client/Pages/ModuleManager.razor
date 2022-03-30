@@ -85,7 +85,7 @@ Register Nuget Package (nupkg file)
 
         foreach(var asset in package.Assets)
         {
-            var id = asset.Item2.Substring(0, asset.Item2.LastIndexOf("."));
+            var id = package.Name + asset.Item2.Substring(0, asset.Item2.LastIndexOf("."));
 
             if (asset.Item1 == "css")
             {

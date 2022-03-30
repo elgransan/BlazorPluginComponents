@@ -2,6 +2,15 @@
 
 You can load dynamically and without registering the RCL (Razor Class Library) on the project all the components you want with this project.
 
+## Installation
+
+* git clone the repo
+* compile first RazorClassLibrary2 because a post-build command copy those files to the main project. If you don't do it, you will get an error message
+* run the server
+* enjoy
+
+## Project Details
+
 When you publish a RCL you get this kind of files:
 * The Assembly (dll) and the Symbols (pdb) files
 * The Assets for the components:
