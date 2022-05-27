@@ -30,7 +30,11 @@ The project shows 4 ways to import and load a RCL component:
 
 Example
 
-
-
 ![test](https://user-images.githubusercontent.com/9949584/160662593-5f765ee3-149c-4a0c-a0fe-a22d6a3193c7.gif)
 
+
+Dynamic page loader from a RCL project
+
+You can also load a page dynamically though the Module Manager as you can see in the example
+
+![pageload](https://user-images.githubusercontent.com/9949584/170790487-02d37b12-465e-4afe-8f4f-365b953b5341.gif)
