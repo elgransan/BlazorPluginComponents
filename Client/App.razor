@@ -1,4 +1,8 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using BlazorPlugin2.Shared
+@inject IPackageRepository repo;
+@inject Interop DOMinterop;
+
+<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="packages.Select(s => s.Assembly).ToArray()">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -10,3 +14,30 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code
+{
+    List<Package> packages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        packages = await repo.GetList();
+        foreach(var package in packages)
+        {
+            await repo.Load(package);
+            foreach(var asset in package.Assets)
+            {
+                var id = package.Name + asset.Item2.Substring(0, asset.Item2.LastIndexOf("."));
+
+                if (asset.Item1 == "css")
+                {
+                    await DOMinterop.IncludeLink(id, $"/_content/{package.Name}/{asset.Item2}");
+                }
+                else if(asset.Item1 == "js")
+                {
+                    await DOMinterop.IncludeScript(id, $"/_content/{package.Name}/{asset.Item2}");
+                }
+            }
+        }
+    }
+}
